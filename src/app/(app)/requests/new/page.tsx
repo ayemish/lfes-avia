@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getRequestCategories } from "@/lib/queries/request.query";
+import { createRequest } from "@/actions/request.actions";
 
 export const metadata: Metadata = { title: "New request" };
 
@@ -14,7 +16,8 @@ export const metadata: Metadata = { title: "New request" };
  * Milestone 2 wires submission to the `requests` table via a Server Action;
  * Milestone 3 adds AI-guided assistance. The field set mirrors the schema.
  */
-export default function NewRequestPage() {
+export default async function NewRequestPage() {
+  const categories = await getRequestCategories();
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
@@ -33,7 +36,7 @@ export default function NewRequestPage() {
         </CardHeader>
         <CardContent>
           {/* Submission handler added in Milestone 2. */}
-          <form className="space-y-4">
+          <form  action={createRequest} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="type">Request type</Label>
@@ -57,9 +60,12 @@ export default function NewRequestPage() {
                   name="category"
                   className="border-input h-9 w-full rounded-md border bg-transparent px-3 text-sm"
                 >
-                  {SEED_CATEGORIES.map((c) => (
-                    <option key={c.slug} value={c.slug}>
-                      {c.name}
+                  {categories.map((category) => (
+                    <option
+                      key={category.id}
+                      value={category.id}
+                    >
+                      {category.name}
                     </option>
                   ))}
                 </select>
@@ -114,7 +120,7 @@ export default function NewRequestPage() {
               <Button variant="outline" type="button" asChild>
                 <Link href="/requests">Cancel</Link>
               </Button>
-              <Button type="submit" disabled>
+              <Button type="submit" >
                 Submit request (wired in M2)
               </Button>
             </div>
